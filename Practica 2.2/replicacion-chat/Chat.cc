@@ -1,19 +1,28 @@
 #include "Chat.h"
+#include <string>
 
 void ChatMessage::to_bin()
 {
     alloc_data(MESSAGE_SIZE);
-	
+
     memset(_data, 0, MESSAGE_SIZE);
 
-    //Serializar los campos type, nick y message en el buffer _data
-	memcpy(_data, (void*)&type, sizeof(uint8_t));
-	_data += sizeof(uint8_t);
-	memcpy(_data, (void*)&nick, sizeof(nick));
-	_data += sizeof(nick);
-	memcpy(_data, (void*)&message, sizeof(message));
-	_data += sizeof(message);
-	_data -= MESSAGE_SIZE;
+    char * d = _data;
+
+    memcpy(d, &type, sizeof(uint8_t));
+    d += sizeof(uint8_t);
+
+    for (unsigned int i = 0; i < 7 && i < nick.length(); i++, d++) {
+     *d = nick[i];
+    }
+
+    d += 7 * sizeof(char);
+
+	for (unsigned int i = 0; i < message.length(); i++, d++) {
+	 *d = message[i];
+	}
+
+	d = _data + sizeof(uint8_t) + 8* sizeof(char);
 	
 }
 
@@ -23,15 +32,16 @@ int ChatMessage::from_bin(char * bobj)
 
     memcpy(static_cast<void *>(_data), bobj, MESSAGE_SIZE);
 
-    //Reconstruir la clase usando el buffer _data
-	memcpy((void*)&type, _data, sizeof(uint8_t));
-	_data += sizeof(uint8_t);
-	memcpy((void*)&nick, _data, sizeof(nick));
-	_data += sizeof(nick);
-	memcpy((void*)&message, _data, sizeof(message));
-	_data += sizeof(message);
-	_data -= MESSAGE_SIZE;
+    type = ((uint8_t) *_data);
 
+    char * _nick = _data + sizeof(uint8_t);
+    char * _msg = _nick + sizeof(char) * 8;
+
+    std::string n(_nick, 8);
+    std::string m(_msg, 80);
+
+    message = m;
+    nick = n;
     return 0;
 }
 
@@ -50,30 +60,35 @@ void ChatServer::do_messages()
 		Socket* newSd;
 		socket.recv(mensj, newSd);
 		switch(mensj.type){
-			case 0:
-				clients.push_back(newSd);
+			case ChatMessage::LOGIN:                
+				clients.push_back(newSd);                            
+                std::cout << "LOGIN: " << *newSd << "\n";
 			break;
+            
 
-			case 1:
-				for(auto s : clients){
-					if(s != newSd){
-						socket.send(mensj, *s);
+			case ChatMessage::MESSAGE:   
+				for(auto it = clients.begin(); it != clients.end(); ++it){
+					if(!(*(*it) == *newSd)){
+						socket.send(mensj, *(*it));
 					}
-				}
-			break;
+				}         
+                std::cout << "MESSAGE: " << *newSd << "\n";
+			break;            
 
-			case 2:
-				int i = 0;
-				bool encontrado = false;
-				
-				while(!encontrado && i != clients.size()){
-					if(clients[i] == newSd){
-						clients.erase(clients.begin() + i);
-						encontrado =true;
-					}
-					else i++;
-				}
-			break;
+			case ChatMessage::LOGOUT:               
+
+                std::cout << "LOGOUT: " << *newSd << "\n";         
+				for (auto it = clients.begin(); it != clients.end(); ++it) {
+                    if (*(*it) == *newSd) {
+                        delete *it;
+                        clients.erase(it);
+                        break;
+                    }
+                }
+			break;            
+
+			default:
+				break;
 		}
     }
 }
@@ -106,7 +121,15 @@ void ChatClient::input_thread()
         // Enviar al servidor usando socket
 		std::string m;
 		std::getline(std::cin,m);	
-		ChatMessage chat(nick,m);
+
+        ChatMessage chat(nick,m);
+
+        if(m == "q" || m == "Q"){
+            chat.type = ChatMessage::LOGOUT;
+            socket.send(chat,socket);
+            break;
+        }
+		
 		chat.type = ChatMessage::MESSAGE;
 
 		socket.send(chat,socket);
@@ -123,6 +146,6 @@ void ChatClient::net_thread()
 		socket.recv(recibido);
 
 		if(recibido.type == ChatMessage::MESSAGE)
-			std::cout << recibido.nick << ": " << recibido.message << "\n";
+			std::cout <<"[ "<< recibido.nick << " ]: " << recibido.message << "\n";
     }
 }
