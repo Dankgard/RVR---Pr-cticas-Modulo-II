@@ -7,26 +7,6 @@
 #include "Socket.h"
 #include "XLDisplay.h"
 
-class Player{
-    public:
-        int _x;
-        int _y;
-        Player(int x, int y){
-            _x = x;
-            _y = y;
-        }
-        XLDisplay& render(int nPlayer, int des){
-            XLDisplay& disp = XLDisplay::display();
-            if(nPlayer==1)
-                disp.set_color(XLDisplay::BLUE);
-            else
-                disp.set_color(XLDisplay::RED);
-
-            disp.rectangle(des,_y,50,75);
-            return disp;
-        }
-};
-
 class ChatMessage: public Serializable
 {
 public:

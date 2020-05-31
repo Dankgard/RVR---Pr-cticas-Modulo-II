@@ -1,7 +1,7 @@
 CC=g++
 CFLAGS=-g -I.
-DEPS = Socket.h Chat.h XLDisplay.h
-OBJ = Socket.o Chat.o XLDisplay.o
+DEPS = Socket.h Chat.h XLDisplay.h Player.h
+OBJ = Socket.o Chat.o XLDisplay.o Player.o
 LIBS=-lpthread -lm -lX11
 
 %.o: %.cc $(DEPS)

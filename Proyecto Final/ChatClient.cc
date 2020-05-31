@@ -4,6 +4,7 @@
 #include "Chat.h"
 
 #include "XLDisplay.h"
+#include "Player.h"
 
 extern "C" void * _client_thread(void *arg)
 {
@@ -29,11 +30,11 @@ int main(int argc, char **argv)
     ec.login();
 
     std::cout << "ENTRA AL RENDERIZADO\n";
-    XLDisplay::init(800, 400, "Jugador1");
+    XLDisplay::init(800, 400, "Space Showdown");
 
     Player player1(0,100);
 
-    XLDisplay& dpy = player1.render(1, 0);
+    XLDisplay& dpy = player1.render(1);
 
     dpy.flush();
 
@@ -42,19 +43,25 @@ int main(int argc, char **argv)
 
     do {
         k = dpy.wait_key();
-        switch(k){
+        switch(k) {
             case 'w':
-                x++;
-                dpy.clear();
-                XLDisplay& dpy = player1.render(1, x);
-                dpy.flush();
+            player1._y -= 1;
+            break;
+            case 'd':
+            player1._y += 1;
+            break;
+            case 'a':
+            player1.shoot(1);
             break;
         }
+        dpy.clear();
+        XLDisplay& dpy = player1.render(1);
+        dpy.flush();
     } while (k != 'q');
 
-    //dpy.clear();
+    dpy.clear();
 
-    //dpy.flush();
+    dpy.flush();
 
     sleep(1);
 }
