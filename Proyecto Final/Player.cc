@@ -1,13 +1,14 @@
 #include "Player.h"
 
-Player::Player(int x, int y){
+Player::Player(int x, int y, int nPlayer){
     _x = x;
     _y = y;
+	_nPlayer = nPlayer;
 }
 
-XLDisplay& Player::render(int nPlayer){
+XLDisplay& Player::render(){
     XLDisplay& disp = XLDisplay::display();
-    if(nPlayer==1)
+    if(_nPlayer==1)
         disp.set_color(XLDisplay::BLUE);
     else
         disp.set_color(XLDisplay::RED);
@@ -16,9 +17,9 @@ XLDisplay& Player::render(int nPlayer){
     return disp;
 }
 
-void Player::shoot(int nPlayer){
-    if(nPlayer == 1)
+void Player::shoot(){
+    if(_nPlayer == 1)
         std::cout << "Disparo: " << _x << " " << _y << " speed: " << "5" "\n";
-    else if(nPlayer == 2)
+    else if(_nPlayer == 2)
         std::cout << "Disparo: " << _x << " " << _y << " speed: " << "-5" "\n";
 }

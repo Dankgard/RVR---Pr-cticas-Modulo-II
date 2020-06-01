@@ -32,9 +32,9 @@ int main(int argc, char **argv)
     std::cout << "ENTRA AL RENDERIZADO\n";
     XLDisplay::init(800, 400, "Space Showdown");
 
-    Player player1(0,100);
+    Player player1(0,100,1);
 
-    XLDisplay& dpy = player1.render(1);
+    XLDisplay& dpy = player1.render();
 
     dpy.flush();
 
@@ -51,11 +51,11 @@ int main(int argc, char **argv)
             player1._y += 1;
             break;
             case 'a':
-            player1.shoot(1);
+            player1.shoot();
             break;
         }
         dpy.clear();
-        XLDisplay& dpy = player1.render(1);
+        XLDisplay& dpy = player1.render();
         dpy.flush();
     } while (k != 'q');
 

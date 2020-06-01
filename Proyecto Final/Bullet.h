@@ -6,13 +6,16 @@
 #include <iostream>
 #include "XLDisplay.h"
 
-class Player{
+class Bullet{
     public:
         int _x;
         int _y;
 		int _nPlayer;
-        Player(int x, int y, int _nPlayer);
 
-        XLDisplay& render();        
-        void shoot();        
+		int _velX;
+		int _velY;
+        Bullet(int x, int y, int _nPlayer);
+
+        XLDisplay& render();
+		void move();
 };
