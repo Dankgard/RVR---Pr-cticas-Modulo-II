@@ -5,11 +5,11 @@ Bullet::Bullet(int x, int y, int nPlayer){
     _y = y;
 	_nPlayer = nPlayer;
 
-	_vy = 0;
+	_velY = 0;
 	if (nPlayer == 1)
-		_vx = 1;
+		_velX = 1;
 	else
-		_vx = -1;
+		_velX = -1;
 
 }
 
@@ -26,6 +26,6 @@ XLDisplay& Bullet::render(){
 
 void Bullet::move()
 {
-	_x += _vx;
-	_y += _vy;
+	_x += _velX;
+	_y += _velY;
 }
