@@ -52,17 +52,24 @@ void ChatServer::do_messages()
 {
     while (true)
     {
-        //Recibir Mensajes en y en función del tipo de mensaje
-        // - LOGIN: Añadir al vector clients
-        // - LOGOUT: Eliminar del vector clients
-        // - MESSAGE: Reenviar el mensaje a todos los clientes (menos el emisor)
 		ChatMessage mensj;
 		Socket* newSd;
 		socket.recv(mensj, newSd);
 		switch(mensj.type){
-			case ChatMessage::LOGIN:                
-				clients.push_back(newSd);                            
-                std::cout << "LOGIN: " << *newSd << "\n";
+			case ChatMessage::LOGIN:
+                if(client1 == nullptr){
+                    client1 = newSd;
+                    player1 = mensj.nick;                           
+                    std::cout << "LOGIN: " << player1 << "\n";
+                }
+                else if(client2 == nullptr){
+                    client2 = newSd;
+                    player2 = mensj.nick;                           
+                    std::cout << "LOGIN: " << player2 << "\n";
+                }
+                else{
+                    std::cout << "LOBBY IS FULL\n";
+                }
 			break;
             
 
@@ -85,7 +92,22 @@ void ChatServer::do_messages()
                         break;
                     }
                 }
-			break;            
+			break;  
+
+            case ChatMessage::MOVEUP:
+            break;  
+
+            case ChatMessage::MOVEDOWN:
+            break;
+
+            case ChatMessage::MOVERIGHT:
+            break;
+
+            case ChatMessage::MOVELEFT:
+            break;
+
+            case ChatMessage::SHOOT:
+            break;        
 
 			default:
 				break;

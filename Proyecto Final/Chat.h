@@ -16,7 +16,12 @@ public:
     {
         LOGIN   = 0,
         MESSAGE = 1,
-        LOGOUT  = 2
+        LOGOUT  = 2,
+        MOVEUP = 3,
+        MOVEDOWN = 4,
+        MOVERIGHT= 5,
+        MOVELEFT = 6,
+        SHOOT = 7
     };
 
     ChatMessage(){};
@@ -59,11 +64,15 @@ private:
      *  su socket
      */
     std::vector<Socket *> clients;
+    Socket* client1 = nullptr;
+    Socket* client2 = nullptr;
 
     /**
      * Socket del servidor
      */
     Socket socket;
+    std::string player1;
+    std::string player2;
 };
 
 // -----------------------------------------------------------------------------
