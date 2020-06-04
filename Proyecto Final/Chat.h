@@ -6,6 +6,8 @@
 #include "Serializable.h"
 #include "Socket.h"
 #include "XLDisplay.h"
+#include "Game.h"
+
 
 class ChatMessage: public Serializable
 {
@@ -15,18 +17,15 @@ public:
     enum MessageType
     {
         LOGIN   = 0,
-        MESSAGE = 1,
-        LOGOUT  = 2,
-        MOVEUP = 3,
-        MOVEDOWN = 4,
-        MOVERIGHT= 5,
-        MOVELEFT = 6,
-        SHOOT = 7
+        LOGOUT  = 1,
+        MOVEUP = 2,
+        MOVEDOWN = 3,
+        SHOOT = 4
     };
 
     ChatMessage(){};
 
-    ChatMessage(const std::string& n, const std::string& m):nick(n),message(m){};
+    ChatMessage(const std::string& n):nick(n){};
 
     void to_bin();
 
@@ -35,7 +34,6 @@ public:
     uint8_t type;
 
     std::string nick;
-    std::string message;
 };
 
 // -----------------------------------------------------------------------------
@@ -57,13 +55,13 @@ public:
      *  lo distribuye a los clientes. Mantiene actualizada la lista de clientes
      */
     void do_messages();
+    void update_server();
 
 private:
     /**
      *  Lista de clientes conectados al servidor de Chat, representados por
      *  su socket
-     */
-    std::vector<Socket *> clients;
+     */    
     Socket* client1 = nullptr;
     Socket* client2 = nullptr;
 
@@ -71,6 +69,7 @@ private:
      * Socket del servidor
      */
     Socket socket;
+    Game* game;
     std::string player1;
     std::string player2;
 };
@@ -90,7 +89,10 @@ public:
      * @param n nick del usuario
      */
     ChatClient(const char * s, const char * p, const char * n):socket(s, p),
-        nick(n){};
+        nick(n){
+            game = new Game(0, 100, 800, 100)
+            dpy = &XLDisplay::display();
+        };
 
     /**
      *  Envía el mensaje de login al servidor
@@ -125,5 +127,8 @@ private:
      * Nick del usuario
      */
     std::string nick;
+    bool exit = false;
+    Game* game;
+    XLDisplay* dpy;
 };
 

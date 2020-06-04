@@ -8,11 +8,12 @@
 
 class Player{
     public:
-        int _x;
-        int _y;
-		int _nPlayer;
-        Player(int x, int y, int _nPlayer);
+        int16_t _x;
+        int16_t _y;
+		int16_t _nPlayer;
+        Player(int16_t x, int16_t y, int16_t _nPlayer);
 
         XLDisplay& render();        
-        void shoot();        
+        void shoot();       
+        void move(int16_t y); 
 };

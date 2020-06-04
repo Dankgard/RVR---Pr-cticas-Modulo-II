@@ -1,6 +1,6 @@
 #include "Player.h"
 
-Player::Player(int x, int y, int nPlayer){
+Player::Player(int16_t x, int16_t y, int16_t nPlayer){
     _x = x;
     _y = y;
 	_nPlayer = nPlayer;
@@ -22,4 +22,9 @@ void Player::shoot(){
         std::cout << "Disparo: " << _x << " " << _y << " speed: " << "5" "\n";
     else if(_nPlayer == 2)
         std::cout << "Disparo: " << _x << " " << _y << " speed: " << "-5" "\n";
+}
+
+void Player::move(int16_t y){
+    if(_y < 0 && y > 400)
+        _y += y;    
 }
