@@ -88,11 +88,10 @@ public:
      * @param p puerto del servidor
      * @param n nick del usuario
      */
-    ChatClient(const char * s, const char * p, const char * n):socket(s, p),
-        nick(n){
-            game = new Game(0, 100, 800, 100)
-            dpy = &XLDisplay::display();
-        };
+    ChatClient(const char * s, const char * p, const char * n):socket(s, p), nick(n){
+        game = new Game(0, 100, 800, 300);
+        dpy = &XLDisplay::display();
+    };
 
     /**
      *  Envía el mensaje de login al servidor
@@ -115,9 +114,6 @@ public:
      *  en STDOUT
      */
     void net_thread();
-
-private:
-
     /**
      * Socket para comunicar con el servidor
      */

@@ -4,7 +4,6 @@
 #include "Chat.h"
 
 #include "XLDisplay.h"
-#include "Player.h"
 
 extern "C" void * _client_thread(void *arg)
 {
@@ -26,43 +25,10 @@ int main(int argc, char **argv)
     pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
 
     pthread_create(&id, &attr, _client_thread, static_cast<void *>(&ec));
-
-    ec.login();
-
-    std::cout << "ENTRA AL RENDERIZADO\n";
+   
     XLDisplay::init(800, 400, "Space Showdown");
-
-    Player player1(0,100,1);
-
-    XLDisplay& dpy = player1.render();
-
-    dpy.flush();
-
-    char k;
-    int x=0;
-
-    do {
-        k = dpy.wait_key();
-        switch(k) {
-            case 'w':
-            player1._y -= 1;
-            break;
-            case 'd':
-            player1._y += 1;
-            break;
-            case 'a':
-            player1.shoot();
-            break;
-        }
-        dpy.clear();
-        XLDisplay& dpy = player1.render();
-        dpy.flush();
-    } while (k != 'q');
-
-    dpy.clear();
-
-    dpy.flush();
-
-    sleep(1);
+   
+    ec.login();
+    ec.input_thread();
 }
 

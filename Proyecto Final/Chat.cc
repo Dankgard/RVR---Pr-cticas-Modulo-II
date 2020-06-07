@@ -75,16 +75,16 @@ void ChatServer::do_messages()
 
             case ChatMessage::MOVEUP:
                 if(mensj.nick == player1)
-                    game->player1.move(-10);
+                    game->player1->move(-10);
                 else if(mensj.nick == player2)
-                    game->player.move(-10);
+                    game->player2->move(-10);
             break;  
 
             case ChatMessage::MOVEDOWN:
                 if(mensj.nick == player1)
-                    game->player1.move(10);
+                    game->player1->move(10);
                 else if(mensj.nick == player2)
-                    game->player.move(10);
+                    game->player2->move(10);
             break;
 
             case ChatMessage::SHOOT:
@@ -131,26 +131,30 @@ void ChatClient::logout()
 }
 
 void ChatClient::input_thread()
-{
-    while (true)
-    {
-        // Leer stdin con std::getline
-        // Enviar al servidor usando socket
-		std::string m;
-		std::getline(std::cin,m);	
-
-        ChatMessage chat(nick,m);
-
-        if(m == "q" || m == "Q"){
-            chat.type = ChatMessage::LOGOUT;
-            socket.send(chat,socket);
+{            
+    char c;
+    ChatMessage m(nick);
+    do{
+        c = dpy->wait_key();
+        switch(c){
+            case 'w':
+                m.type = ChatMessage::MOVEUP;
+                socket.send(m, socket);
+            break;
+            case 'd':
+                m.type = ChatMessage::MOVEDOWN;
+                socket.send(m, socket);
+            break;
+            case ' ':
+                m.type = ChatMessage::SHOOT;
+                socket.send(m, socket);
+            break;
+            case 'q':
+                logout();
+                exit = true;
             break;
         }
-		
-		chat.type = ChatMessage::MESSAGE;
-
-		socket.send(chat,socket);
-    }
+    }while(!exit);
 }
 
 void ChatClient::net_thread()
@@ -158,8 +162,10 @@ void ChatClient::net_thread()
     while(!exit)
     {
         socket.recv(*game);
-        dpy.clear();
-        dpy = game->player1.render();
-        dpy = game->player2.render();
+        dpy->clear();
+        dpy->set_color(XLDisplay::BLUE);
+        dpy->rectangle(game->player1->_x, game->player1->_y, 50, 75);
+        dpy->set_color(XLDisplay::RED);
+        dpy->rectangle(game->player2->_x, game->player2->_y, 50, 75);    
     }
 }
