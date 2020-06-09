@@ -48,6 +48,7 @@ public:
     ChatServer(const char * s, const char * p): socket(s, p)
     {
         socket.bind();
+        game = new Game(0, 100, 500, 300);
     };
 
     /**
@@ -89,7 +90,7 @@ public:
      * @param n nick del usuario
      */
     ChatClient(const char * s, const char * p, const char * n):socket(s, p), nick(n){
-        game = new Game(0, 100, 800, 300);
+        game = new Game(0, 100, 500, 300);
         dpy = &XLDisplay::display();
     };
 

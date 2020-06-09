@@ -101,10 +101,11 @@ void ChatServer::do_messages()
 }
 
 void ChatServer::update_server(){
-    while(true){
+    while(true){        
         usleep(10000);
-        if(client1 != nullptr)
+        if(client1 != nullptr){           
             socket.send(*game,*client1);
+        }
         if(client2 != nullptr)
             socket.send(*game,*client2);
     }

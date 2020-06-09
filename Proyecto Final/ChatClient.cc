@@ -9,7 +9,7 @@ extern "C" void * _client_thread(void *arg)
 {
     ChatClient * server = static_cast<ChatClient *>(arg);
 
-    server->net_thread();
+    server->input_thread();
 
     return 0;
 }
@@ -29,6 +29,6 @@ int main(int argc, char **argv)
     XLDisplay::init(800, 400, "Space Showdown");
    
     ec.login();
-    ec.input_thread();
+    ec.net_thread();
 }
 
