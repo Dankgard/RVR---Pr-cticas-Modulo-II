@@ -164,9 +164,29 @@ void ChatClient::net_thread()
     {
         socket.recv(*game);
         dpy->clear();
+
+		// jugadores
         dpy->set_color(XLDisplay::BLUE);
         dpy->rectangle(game->player1->_x, game->player1->_y, 50, 75);
         dpy->set_color(XLDisplay::RED);
-        dpy->rectangle(game->player2->_x, game->player2->_y, 50, 75);    
+        dpy->rectangle(game->player2->_x, game->player2->_y, 50, 75);
+
+		// balas
+		for (int i = 0;i < game->bullets.size();i++)
+		{
+			if (game->bullets[i].nPlayer == 1)
+				dpy->set_color(XLDisplay::BLUE);
+			else
+				dpy->set_color(XLDisplay::RED);
+
+			dpy->circle(game->bullets[i]._x, game->bullets[i]._y, 10);
+		}
+
+		// asteroides
+		for (int i = 0;i < game->asteroids.size();i++)
+		{
+			dpy->set_color(XLDisplay::BROWN);
+			dpy->circle(game->asteroids._x, game->asteroids._y, 10);
+		}
     }
 }
