@@ -18,6 +18,10 @@ public:
     Player* player2;
 	vector<Bullet*> bullets;
 	vector<Asteroid*> asteroids;
+	int16_t asteroidFrames = 0;
+	int16_t asteroidMaxFrames = 180;
     void to_bin();
     int from_bin(char * bobj);
+	void createBullet(int16_t nPlayer);
+	void createAsteroid();
 };
