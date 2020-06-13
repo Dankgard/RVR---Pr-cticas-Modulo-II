@@ -33,11 +33,14 @@ int Game::from_bin(char * bobj){
 
 void Game::createBullet(int16_t nPlayer)
 {
-	if (nPlayer == 1)
-		Bullet* bullet = new Bullet(player1._x, player1->_y, nPlayer);
-	else
-		Bullet* bullet = new Bullet(player2._x, player2->_y, nPlayer);
-	bullets.push_back(bullet);
+	if (nPlayer == 1){
+		Bullet* bullet = new Bullet(player1->_x, player1->_y, nPlayer);
+        bullets.push_back(bullet);
+    }
+	else{
+        Bullet* bullet2 = new Bullet(player2->_x, player2->_y, nPlayer);
+        bullets.push_back(bullet2);
+    }	
 }
 
 void Game::createAsteroid()

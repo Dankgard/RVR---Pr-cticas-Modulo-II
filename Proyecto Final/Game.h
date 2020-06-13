@@ -16,8 +16,8 @@ public:
     static const size_t SIZE = sizeof(int16_t) * 4;
     Player* player1;
     Player* player2;
-	vector<Bullet*> bullets;
-	vector<Asteroid*> asteroids;
+	std::vector<Bullet*> bullets;
+	std::vector<Asteroid*> asteroids;
 	int16_t asteroidFrames = 0;
 	int16_t asteroidMaxFrames = 180;
     void to_bin();

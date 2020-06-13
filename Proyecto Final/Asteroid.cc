@@ -21,10 +21,7 @@ void Asteroid::move()
 	_y += _velY;
 }
 
-void bulletCollision(int nPlayer, int vX)
+void Asteroid::bulletCollision(int nPlayer, int vX)
 {
-	if(nPlayer == 1)
-        _velX = vX;
-    else if(nPlayer == 2)
-        _velX = -vX;
+	_velX *= -1;
 }

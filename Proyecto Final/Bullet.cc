@@ -6,7 +6,7 @@ Bullet::Bullet(int x, int y, int nPlayer){
 	_nPlayer = nPlayer;
 
 	_velY = 0;
-	if (nPlayer == 1)
+	if (_nPlayer == 1)
 		_velX = 1;
 	else
 		_velX = -1;
@@ -15,7 +15,7 @@ Bullet::Bullet(int x, int y, int nPlayer){
 
 XLDisplay& Bullet::render(){
     XLDisplay& disp = XLDisplay::display();
-    if(nPlayer==1)
+    if(_nPlayer==1)
         disp.set_color(XLDisplay::BLUE);
     else
         disp.set_color(XLDisplay::RED);
