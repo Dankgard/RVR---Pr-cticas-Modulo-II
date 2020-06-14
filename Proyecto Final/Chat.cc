@@ -180,7 +180,11 @@ void ChatServer::update_server(){
 
 			// COLISIONES
 
-			// con bordes
+			// con bordes verticales (rebote)
+			if (game->asteroids[i]->_y + 5 > 400 || game->asteroids[i]->_y - 5 < 0)
+				game->asteroids[i]->_velY *= -1;
+
+			// con bordes horizontales (destruir)
 			if (game->asteroids[i]->_x - 5 > 800 || game->asteroids[i]->_x + 5 < 0)
 				game->asteroids.erase(game->asteroids.begin() + i);
 
