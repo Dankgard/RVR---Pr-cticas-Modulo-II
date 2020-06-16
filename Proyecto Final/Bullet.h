@@ -8,13 +8,13 @@
 
 class Bullet{
     public:
-        int _x;
-        int _y;
-		int _nPlayer;
+        int16_t _x;
+        int16_t _y;
+		int16_t _nPlayer;
 
-		int _velX;
-		int _velY;
-        Bullet(int x, int y, int _nPlayer);
+		int16_t _velX;
+		int16_t _velY;
+        Bullet(int16_t x, int16_t y, int16_t _nPlayer);
 
         XLDisplay& render();
 		void move();

@@ -92,6 +92,7 @@ void ChatServer::do_messages()
 				{
 					std::cout << player1 << "SHOOT\n";
 					game->createBullet(1);
+					std::cout<<game->bullets.size() << "\n";
 				}
 				else if (mensj.nick == player2)
 				{
@@ -109,11 +110,6 @@ void ChatServer::do_messages()
 void ChatServer::update_server(){
     while(true){        
         usleep(10000);
-        if(client1 != nullptr){           
-            socket.send(*game,*client1);
-        }
-        if(client2 != nullptr)
-            socket.send(*game,*client2);
 
 		// creacion de asteroides
 		game->asteroidFrames++;
@@ -206,7 +202,12 @@ void ChatServer::update_server(){
 					std::cout << "GAME OVER. PLAYER 1 WINS";
 			}
 		}
-    }
+		if(client1 != nullptr){           
+            socket.send(*game,*client1);
+        }
+        if(client2 != nullptr)
+            socket.send(*game,*client2);
+    }        
 }
 
 void ChatClient::login()
@@ -261,8 +262,16 @@ void ChatClient::net_thread()
 {
     while(!exit)
     {
-        socket.recv(*game);
-        dpy->clear();
+        socket.recv(*game);        
+    }
+}
+
+void ChatClient::render_thread()
+{
+	 while(!exit)
+    {
+		usleep(1000);
+		dpy->clear();
 
 		// RENDERS
 
@@ -270,11 +279,12 @@ void ChatClient::net_thread()
         dpy->set_color(XLDisplay::BLUE);
         dpy->rectangle(game->player1->_x, game->player1->_y, 50, 75);
         dpy->set_color(XLDisplay::RED);
-        dpy->rectangle(game->player2->_x, game->player2->_y, 50, 75);
+        dpy->rectangle(game->player2->_x, game->player2->_y, 50, 75);		
 		
+		std::cout<<game->bullets.size() <<"\n";	
 		// render balas
 		for (int i = 0;i < game->bullets.size();i++)
-		{			
+		{				
 			if (game->bullets[i]->_nPlayer == 1)
 				dpy->set_color(XLDisplay::BLUE);
 			else
@@ -289,5 +299,6 @@ void ChatClient::net_thread()
 			dpy->set_color(XLDisplay::BROWN);
 			dpy->circle(game->asteroids[i]->_x, game->asteroids[i]->_y, 10);
 		}
-    }
+		dpy->flush();
+	}
 }

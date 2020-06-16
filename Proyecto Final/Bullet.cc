@@ -1,6 +1,6 @@
 #include "Bullet.h"
 
-Bullet::Bullet(int x, int y, int nPlayer){
+Bullet::Bullet(int16_t x, int16_t y, int16_t nPlayer){
     _x = x;
     _y = y;
 	_nPlayer = nPlayer;

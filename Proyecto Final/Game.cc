@@ -7,6 +7,7 @@ Game::Game(int16_t x1,int16_t y1, int16_t x2, int16_t y2){
 }
 
 void Game::to_bin(){
+    size_t bSize= bullets.size() * sizeof(int16_t) * 2;
     alloc_data(SIZE);
     char * d = _data;
     memcpy(d, &player1->_x, sizeof(int16_t));                                          
@@ -17,6 +18,16 @@ void Game::to_bin(){
     d += sizeof(int16_t);
     memcpy(d, &player2->_y, sizeof(int16_t));                                          
     d += sizeof(int16_t);
+
+    int16_t tam = bullets.size();
+    memcpy(d, &tam, sizeof(int16_t));
+
+    for (int i = 0; i < bullets.size(); i++) {
+        d += sizeof(int16_t); 
+        memcpy(d, &bullets[i]->_x, sizeof(int16_t));
+        d += sizeof(int16_t); 
+        memcpy(d, &bullets[i]->_y, sizeof(int16_t));
+    }
 }
 
 int Game::from_bin(char * bobj){
@@ -28,6 +39,22 @@ int Game::from_bin(char * bobj){
     bobj += sizeof(int16_t);
     memcpy(&player2->_y, bobj, sizeof(int16_t));
     bobj += sizeof(int16_t);
+
+    int16_t t;
+    memcpy(&t, bobj, sizeof(int16_t));
+    bullets.clear();
+
+    for (int i = 0; i < t; i++) {
+        int16_t _x;
+        int16_t _y;
+        bobj += sizeof(int16_t); 
+        memcpy(&_x, bobj, sizeof(int16_t));
+        bobj += sizeof(int16_t); 
+        memcpy(&_y, bobj, sizeof(int16_t));
+        Bullet* bull = new Bullet(_x, _y, 1);
+        bullets.push_back(bull);
+    }
+
     return 0;
 }
 

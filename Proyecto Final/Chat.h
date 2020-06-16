@@ -58,7 +58,7 @@ public:
     void do_messages();
     void update_server();
 
-private:
+protected:
     /**
      *  Lista de clientes conectados al servidor de Chat, representados por
      *  su socket
@@ -115,6 +115,8 @@ public:
      *  en STDOUT
      */
     void net_thread();
+
+    void render_thread();
     /**
      * Socket para comunicar con el servidor
      */
