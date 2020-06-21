@@ -7,8 +7,9 @@ Game::Game(int16_t x1,int16_t y1, int16_t x2, int16_t y2){
 }
 
 void Game::to_bin(){
-    size_t bSize= bullets.size() * sizeof(int16_t) * 2;
-    alloc_data(SIZE);
+    size_t bSize= bullets.size() * sizeof(int16_t) * 4;
+    //size_t aSize= asteroids.size() * sizeof(int16_t) * 4;
+    alloc_data(SIZE + bSize);
     char * d = _data;
     memcpy(d, &player1->_x, sizeof(int16_t));                                          
     d += sizeof(int16_t);
@@ -19,15 +20,25 @@ void Game::to_bin(){
     memcpy(d, &player2->_y, sizeof(int16_t));                                          
     d += sizeof(int16_t);
 
-    int16_t tam = bullets.size();
-    memcpy(d, &tam, sizeof(int16_t));
+    int16_t tamBullet = bullets.size();
+    memcpy(d, &tamBullet, sizeof(int16_t));
 
     for (int i = 0; i < bullets.size(); i++) {
         d += sizeof(int16_t); 
-        memcpy(d, &bullets[i]->_x, sizeof(int16_t));
+        memcpy(d, &bullets[i]._x, sizeof(int16_t));
         d += sizeof(int16_t); 
-        memcpy(d, &bullets[i]->_y, sizeof(int16_t));
+        memcpy(d, &bullets[i]._y, sizeof(int16_t));
     }
+
+    /*int16_t tamAsteroid = asteroids.size();
+    memcpy(d, &tamAsteroid, sizeof(int16_t));
+
+    for (int i = 0; i < asteroids.size(); i++) {
+        d += sizeof(int16_t); 
+        memcpy(d, &asteroids[i]._x, sizeof(int16_t));
+        d += sizeof(int16_t); 
+        memcpy(d, &asteroids[i]._y, sizeof(int16_t));
+    }*/
 }
 
 int Game::from_bin(char * bobj){
@@ -51,9 +62,27 @@ int Game::from_bin(char * bobj){
         memcpy(&_x, bobj, sizeof(int16_t));
         bobj += sizeof(int16_t); 
         memcpy(&_y, bobj, sizeof(int16_t));
-        Bullet* bull = new Bullet(_x, _y, 1);
+        Bullet bull(_x, _y, 1);
         bullets.push_back(bull);
     }
+
+    /*int16_t tamAsteroid;
+    memcpy(&tamAsteroid, bobj, sizeof(int16_t));
+    asteroids.clear();
+
+    for (int i = 0; i < tamAsteroid; i++) {
+        int16_t _x;
+        int16_t _y;
+        int16_t _velY;
+        bobj += sizeof(int16_t); 
+        memcpy(&_x, bobj, sizeof(int16_t));
+        bobj += sizeof(int16_t); 
+        memcpy(&_y, bobj, sizeof(int16_t));
+        bobj += sizeof(int16_t); 
+        memcpy(&_velY, bobj, sizeof(int16_t));
+        Asteroid ast(_x, _y ,_velY);
+        asteroids.push_back(ast);
+    }*/
 
     return 0;
 }
@@ -61,18 +90,18 @@ int Game::from_bin(char * bobj){
 void Game::createBullet(int16_t nPlayer)
 {
 	if (nPlayer == 1){
-		Bullet* bullet = new Bullet(player1->_x, player1->_y, nPlayer);
+		Bullet bullet(player1->_x, player1->_y, nPlayer);
         bullets.push_back(bullet);
     }
 	else{
-        Bullet* bullet2 = new Bullet(player2->_x, player2->_y, nPlayer);
+        Bullet bullet2(player2->_x, player2->_y, nPlayer);
         bullets.push_back(bullet2);
     }	
 }
 
 void Game::createAsteroid()
 {
-	Asteroid* asteroid = new Asteroid(2);
+	Asteroid asteroid (400, 200, 2);
 	asteroids.push_back(asteroid);
 }
 

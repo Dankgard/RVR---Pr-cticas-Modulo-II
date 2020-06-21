@@ -1,8 +1,8 @@
 #include "Asteroid.h"
 
-Asteroid::Asteroid(int vY){
-    _x = 400;
-    _y = 200; //Posicion en y alzar
+Asteroid::Asteroid(int16_t x, int16_t y, int16_t vY){
+    _x = x;
+    _y = y; //Posicion en y alzar
 
 	_velX = 0;
     _velY = vY;
@@ -21,7 +21,7 @@ void Asteroid::move()
 	_y += _velY;
 }
 
-void Asteroid::bulletCollision(int nPlayer, int vX)
+void Asteroid::bulletCollision(int16_t nPlayer, int16_t vX)
 {
 	_velX *= -1;
 }
