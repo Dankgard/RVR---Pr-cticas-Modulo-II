@@ -204,7 +204,7 @@ void ChatServer::update_server(){
 				if (game->player2->_lives <= 0)
 					std::cout << "GAME OVER. PLAYER 1 WINS";
 			}
-		}
+		}		
 		if(client1 != nullptr){           
             socket.send(*game,*client1);
         }
@@ -284,7 +284,7 @@ void ChatClient::render_thread()
         dpy->set_color(XLDisplay::RED);
         dpy->rectangle(game->player2->_x, game->player2->_y, 50, 75);		
 		
-		std::cout<<game->bullets.size() <<"\n";	
+		//std::cout<<"Client: " << game->bullets.size() <<"\n";	
 		// render balas
 		for (int i = 0;i < game->bullets.size();i++)
 		{				
