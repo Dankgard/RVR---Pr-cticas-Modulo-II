@@ -116,7 +116,7 @@ void ChatServer::update_server(){
 		game->asteroidFrames++;
 		//if (game->asteroidFrames == game->asteroidMaxFrames)
 		int r = rand() % 1000000;
-		if(r<10)
+		if(r<100)
 		{
 			game->asteroidFrames = 0;
 			game->createAsteroid();
@@ -133,14 +133,15 @@ void ChatServer::update_server(){
 			// COLISIONES
 
 			// con bordes
-			if (game->bullets[i]._x - 5 > 800 || game->bullets[i]._x + 5 < 0)
+			if (game->bullets[i]._x - game->bullets[i]._r > 800 || game->bullets[i]._x + game->bullets[i]._r < 0)
 				game->bullets.erase(game->bullets.begin() + i);
 
 			// con asteroides
 			for (int j = 0;j < game->asteroids.size();j++)
 			{
-				if (game->asteroids[j]._x - 5 > game->bullets[i]._x - 5 && game->asteroids[j]._x + 5 < game->bullets[i]._x + 5 && game->asteroids[j]._y + 5 < game->bullets[i]._y + 5 && game->asteroids[j]._y - 5 > game->bullets[i]._y - 5)
+				if (game->asteroids[j]._x - game->asteroids[j]._r < game->bullets[i]._x && game->asteroids[j]._x + game->asteroids[i]._r > game->bullets[i]._x && game->asteroids[j]._y + game->asteroids[i]._r > game->bullets[i]._y && game->asteroids[j]._y - game->asteroids[i]._r < game->bullets[i]._y)
 				{
+					std::cout << "COLISION ASTEROIDE\n";
 					game->bullets.erase(game->bullets.begin() + i);
 					game->asteroids[j].bulletCollision(game->bullets[i]._nPlayer, 2);
 				}
@@ -149,7 +150,7 @@ void ChatServer::update_server(){
 			// con jugador 1
 			if (game->bullets[i]._nPlayer == 2)
 			{
-				if (game->bullets[i]._x - 5 > game->player1->_x - 25 && game->bullets[i]._x + 5 < game->player1->_x + 25 && game->bullets[i]._y + 5 < game->player1->_y + 37 && game->bullets[i]._y - 5 > game->player1->_y - 37)
+				if (game->bullets[i]._x > game->player1->_x && game->bullets[i]._x < game->player1->_x + game->player1->_w && game->bullets[i]._y > game->player1->_y && game->bullets[i]._y < game->player1->_y + game->player1->_h)
 				{
 					game->bullets.erase(game->bullets.begin() + i);
 					game->player1->_lives--;
@@ -161,7 +162,7 @@ void ChatServer::update_server(){
 			// con jugador 2
 			if (game->bullets[i]._nPlayer == 1)
 			{
-				if (game->bullets[i]._x - 5 > game->player2->_x - 25 && game->bullets[i]._x + 5 < game->player2->_x + 25 && game->bullets[i]._y + 5 < game->player2->_y + 37 && game->bullets[i]._y - 5 > game->player2->_y - 37)
+				if (game->bullets[i]._x > game->player2->_x && game->bullets[i]._x < game->player2->_x + game->player2->_w && game->bullets[i]._y > game->player2->_y && game->bullets[i]._y < game->player2->_y + game->player2->_h)
 				{
 					game->bullets.erase(game->bullets.begin() + i);
 					game->player2->_lives--;
@@ -180,7 +181,7 @@ void ChatServer::update_server(){
 			// COLISIONES
 
 			// con bordes verticales (rebote)
-			if (game->asteroids[i]._y + 5 > 400 || game->asteroids[i]._y - 5 < 0)
+			if (game->asteroids[i]._y + game->asteroids[i]._r > 400 || game->asteroids[i]._y - game->asteroids[i]._r < 0)
 				game->asteroids[i]._velY *= -1;
 
 			// con bordes horizontales (destruir)
@@ -280,9 +281,9 @@ void ChatClient::render_thread()
 
 		// render jugadores
         dpy->set_color(XLDisplay::BLUE);
-        dpy->rectangle(game->player1->_x, game->player1->_y, 50, 75);
+        dpy->rectangle(game->player1->_x, game->player1->_y, game->player1->_w, game->player1->_h);
         dpy->set_color(XLDisplay::RED);
-        dpy->rectangle(game->player2->_x, game->player2->_y, 50, 75);		
+        dpy->rectangle(game->player2->_x, game->player2->_y, game->player1->_w, game->player1->_h);		
 		
 		//std::cout<<"Client: " << game->bullets.size() <<"\n";	
 		// render balas
@@ -293,14 +294,15 @@ void ChatClient::render_thread()
 			else
 				dpy->set_color(XLDisplay::RED);
 
-			dpy->circle(game->bullets[i]._x, game->bullets[i]._y, 10);
+			dpy->circle(game->bullets[i]._x, game->bullets[i]._y, game->bullets[i]._r);
 		}
 
 		// render asteroides
 		for (int i = 0;i < game->asteroids.size();i++)
 		{
+        	std::cout <<game->asteroids.size()<<"\n";
 			dpy->set_color(XLDisplay::BROWN);
-			dpy->circle(game->asteroids[i]._x, game->asteroids[i]._y, 10);
+			dpy->circle(game->asteroids[i]._x, game->asteroids[i]._y, game->asteroids[i]._r);
 		}
 		dpy->flush();
 	}

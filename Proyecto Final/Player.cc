@@ -26,6 +26,7 @@ void Player::shoot(){
 }
 
 void Player::move(int16_t y){
-    if(_y > 0 && _y < 400)
-        _y += y;    
+    if((y < 0 && _y + y >= 0) ||(y > 0 && _y + y + _h <= 400))
+        _y += y;  
+    std::cout << _y <<"\n"; 
 }

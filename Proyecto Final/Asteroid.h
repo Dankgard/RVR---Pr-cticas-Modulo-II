@@ -10,6 +10,7 @@ class Asteroid{
     public:
         int16_t _x;
         int16_t _y;
+        int16_t _r = 16;
 
 		int16_t _velX;
 		int16_t _velY;

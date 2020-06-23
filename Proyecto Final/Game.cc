@@ -22,7 +22,7 @@ void Game::to_bin(){
 
     int16_t tamBullet = bullets.size();
     memcpy(d, &tamBullet, sizeof(int16_t));
-    std::cout<<"to_bin: " << bullets.size() <<"\n";	
+    //std::cout<<"to_bin: " << bullets.size() <<"\n";	
 
     for (int i = 0; i < bullets.size(); i++) {
         d += sizeof(int16_t); 
@@ -59,7 +59,7 @@ int Game::from_bin(char * bobj){
 
     int16_t t;
     memcpy(&t, bobj, sizeof(int16_t));
-    std::cout<<"from_bin: " << t<<"\n";	
+    //std::cout<<"from_bin: " << t<<"\n";	
     bullets.clear();
     for (int i = 0; i < t; i++) {
         int16_t _x;
@@ -104,14 +104,14 @@ void Game::createBullet(int16_t nPlayer)
         bullets.push_back(bullet);
     }
 	else{
-        Bullet bullet2(player2->_x - 50 , player2->_y + 30, nPlayer);
+        Bullet bullet2(player2->_x, player2->_y + 30, nPlayer);
         bullets.push_back(bullet2);
     }	
 }
 
 void Game::createAsteroid()
 {
-	Asteroid asteroid (400, 200, 2);
+	Asteroid asteroid (400, 200, 1);
 	asteroids.push_back(asteroid);
 }
 

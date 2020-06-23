@@ -23,5 +23,8 @@ void Asteroid::move()
 
 void Asteroid::bulletCollision(int16_t nPlayer, int16_t vX)
 {
-	_velX *= -1;
+	if(nPlayer == 1)
+        _velX = vX;
+    else if(nPlayer == 2)
+        _velX = -vX;
 }

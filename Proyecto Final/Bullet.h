@@ -10,6 +10,7 @@ class Bullet{
     public:
         int16_t _x;
         int16_t _y;
+        int16_t _r = 10;
 		int16_t _nPlayer;
 
 		int16_t _velX;
