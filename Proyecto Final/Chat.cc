@@ -192,7 +192,6 @@ void ChatServer::update_server(){
 			if (game->asteroids[i]._x >= game->player1->_x && game->asteroids[i]._x <= game->player1->_x + game->player1->_w && game->asteroids[i]._y >= game->player1->_y && game->asteroids[i]._y <= game->player1->_y + game->player1->_h)
 			{
 				game->asteroids[i]._velX *= -1;
-				std::cout << game->asteroids[i]._y << " " << game->player1->_y << "\n";
 				if(game->asteroids[i]._y == game->player1->_y + game->player1->_h || game->asteroids[i]._y == game->player1->_y)
 					game->asteroids[i]._velY *= -1;
 				game->player1->_lives--;
@@ -276,10 +275,11 @@ void ChatClient::net_thread()
 }
 
 void ChatClient::render_thread()
-{
-	 while(!exit)
+{		
+	std::cout << "Entra al render\n";
+	while(true)
     {
-		usleep(1000);
+		usleep(10000);
 		dpy->clear();
 
 		// RENDERS
@@ -292,16 +292,14 @@ void ChatClient::render_thread()
 
 		// render jugadores
         dpy->set_color(XLDisplay::BLUE);
+		std::cout << game->player1->_y<<"\n";
         dpy->rectangle(game->player1->_x, game->player1->_y, game->player1->_w, game->player1->_h);
         dpy->set_color(XLDisplay::RED);
         dpy->rectangle(game->player2->_x, game->player2->_y, game->player1->_w, game->player1->_h);		
-		
-		//std::cout<<"Client: " << game->bullets.size() <<"\n";	
-		std::cout<<"Client: " << game->bullets.size() <<"\n";	
+					
 		// render balas
 		for (int i = 0;i < game->bullets.size();i++)
-		{		
-			std::cout<<"Client: " << game->bullets[i]._x <<"\n";			
+		{			
 			if (game->bullets[i]._nPlayer == 1)
 				dpy->set_color(XLDisplay::BLUE);
 			else
@@ -313,7 +311,6 @@ void ChatClient::render_thread()
 		// render asteroides
 		for (int i = 0;i < game->asteroids.size();i++)
 		{
-        	std::cout <<game->asteroids.size()<<"\n";
 			dpy->set_color(XLDisplay::BROWN);
 			dpy->circle(game->asteroids[i]._x, game->asteroids[i]._y, game->asteroids[i]._r);
 		}
