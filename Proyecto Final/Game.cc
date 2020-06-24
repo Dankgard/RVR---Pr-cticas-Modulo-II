@@ -123,3 +123,18 @@ void Game::createAsteroid()
 	asteroids.push_back(asteroid);
 }
 
+bool Game::end_game(){
+    if(player1->_lives > 0 && player2->_lives > 0)
+        return false;
+    else
+        return true;
+}
+
+void Game::reset_game(){
+    player1->_lives = 10;
+    player2->_lives = 10;
+    	
+    bullets.clear();    	
+    asteroids.clear();
+}
+

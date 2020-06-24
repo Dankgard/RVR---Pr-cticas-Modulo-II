@@ -20,7 +20,8 @@ public:
         LOGOUT  = 1,
         MOVEUP = 2,
         MOVEDOWN = 3,
-        SHOOT = 4
+        SHOOT = 4,
+        RESET = 5
     };
 
     ChatMessage(){};
@@ -57,6 +58,8 @@ public:
      */
     void do_messages();
     void update_server();
+    void bullet_behaviour();
+    void asteroid_behaviour();
 
 protected:
     /**

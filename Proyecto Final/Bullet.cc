@@ -7,9 +7,9 @@ Bullet::Bullet(int16_t x, int16_t y, int16_t nPlayer){
 
 	_velY = 0;
 	if (_nPlayer == 1)
-		_velX = 1;
+		_velX = 4;
 	else
-		_velX = -1;
+		_velX = -4;
 
 }
 
