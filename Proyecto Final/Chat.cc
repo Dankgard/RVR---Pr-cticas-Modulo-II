@@ -116,7 +116,7 @@ void ChatServer::update_server(){
 		game->asteroidFrames++;
 		//if (game->asteroidFrames == game->asteroidMaxFrames)
 		int r = rand() % 1000000;
-		if(r<100)
+		if(game->asteroids.size() < 3 && r<100)
 		{
 			game->asteroidFrames = 0;
 			game->createAsteroid();
@@ -133,7 +133,7 @@ void ChatServer::update_server(){
 			// COLISIONES
 
 			// con bordes
-			if (game->bullets[i]._x - game->bullets[i]._r > 800 || game->bullets[i]._x + game->bullets[i]._r < 0)
+			if (game->bullets[i]._x - game->bullets[i]._r > 600 || game->bullets[i]._x + game->bullets[i]._r < 0)
 				game->bullets.erase(game->bullets.begin() + i);
 
 			// con asteroides
@@ -184,23 +184,28 @@ void ChatServer::update_server(){
 			if (game->asteroids[i]._y + game->asteroids[i]._r > 400 || game->asteroids[i]._y - game->asteroids[i]._r < 0)
 				game->asteroids[i]._velY *= -1;
 
-			// con bordes horizontales (destruir)
-			if (game->asteroids[i]._x - 5 > 800 || game->asteroids[i]._x + 5 < 0)
-				game->asteroids.erase(game->asteroids.begin() + i);
-
+			// con bordes horizontales (rebote)
+			if (game->asteroids[i]._x - 5 > 600 || game->asteroids[i]._x + 5 < 0)
+				game->asteroids[i]._velX *= -1;
+			
 			// con jugador 1
-			if (game->asteroids[i]._x - 5 > game->player1->_x - 25 && game->asteroids[i]._x + 5 < game->player1->_x + 25 && game->asteroids[i]._y + 5 < game->player1->_y + 37 && game->asteroids[i]._y - 5 > game->player1->_y - 37)
+			if (game->asteroids[i]._x >= game->player1->_x && game->asteroids[i]._x <= game->player1->_x + game->player1->_w && game->asteroids[i]._y >= game->player1->_y && game->asteroids[i]._y <= game->player1->_y + game->player1->_h)
 			{
-				game->asteroids.erase(game->asteroids.begin() + i);
+				game->asteroids[i]._velX *= -1;
+				std::cout << game->asteroids[i]._y << " " << game->player1->_y << "\n";
+				if(game->asteroids[i]._y == game->player1->_y + game->player1->_h || game->asteroids[i]._y == game->player1->_y)
+					game->asteroids[i]._velY *= -1;
 				game->player1->_lives--;
 				if (game->player1->_lives <= 0)
 					std::cout << "GAME OVER. PLAYER 2 WINS";
 			}
 
 			// con jugador 2
-			if (game->asteroids[i]._x - 5 > game->player2->_x - 25 && game->asteroids[i]._x + 5 < game->player2->_x + 25 && game->asteroids[i]._y + 5 < game->player2->_y + 37 && game->asteroids[i]._y - 5 > game->player2->_y - 37)
+			if (game->asteroids[i]._x >= game->player2->_x && game->asteroids[i]._x <= game->player2->_x + game->player2->_w && game->asteroids[i]._y >= game->player2->_y && game->asteroids[i]._y <= game->player2->_y + game->player2->_h)
 			{
-				game->asteroids.erase(game->asteroids.begin() + i);
+				game->asteroids[i]._velX *= -1;
+				if((game->asteroids[i]._y == game->player2->_y + game->player2->_h) || game->asteroids[i]._y == game->player2->_y)
+					game->asteroids[i]._velY *= -1;
 				game->player2->_lives--;
 				if (game->player2->_lives <= 0)
 					std::cout << "GAME OVER. PLAYER 1 WINS";
@@ -279,6 +284,12 @@ void ChatClient::render_thread()
 
 		// RENDERS
 
+		dpy->set_color(XLDisplay::RED);
+		std::string s1 = "Player 1: " + std::to_string(game->player1->_lives);
+		std::string s2 = "Player 2: " + std::to_string(game->player2->_lives);
+		dpy->text(50, 10, s1);
+		dpy->text(500, 10, s2);
+
 		// render jugadores
         dpy->set_color(XLDisplay::BLUE);
         dpy->rectangle(game->player1->_x, game->player1->_y, game->player1->_w, game->player1->_h);
@@ -286,9 +297,11 @@ void ChatClient::render_thread()
         dpy->rectangle(game->player2->_x, game->player2->_y, game->player1->_w, game->player1->_h);		
 		
 		//std::cout<<"Client: " << game->bullets.size() <<"\n";	
+		std::cout<<"Client: " << game->bullets.size() <<"\n";	
 		// render balas
 		for (int i = 0;i < game->bullets.size();i++)
-		{				
+		{		
+			std::cout<<"Client: " << game->bullets[i]._x <<"\n";			
 			if (game->bullets[i]._nPlayer == 1)
 				dpy->set_color(XLDisplay::BLUE);
 			else

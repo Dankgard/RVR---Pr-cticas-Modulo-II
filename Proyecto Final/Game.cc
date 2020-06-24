@@ -7,22 +7,27 @@ Game::Game(int16_t x1,int16_t y1, int16_t x2, int16_t y2){
 }
 
 void Game::to_bin(){
-    size_t bSize= bullets.size() * sizeof(int16_t) * 4;
-    size_t aSize= asteroids.size() * sizeof(int16_t) * 4;
+    size_t bSize= bullets.size() * sizeof(int16_t) * 3;
+    size_t aSize= asteroids.size() * sizeof(int16_t) * 3;
     alloc_data(SIZE + bSize + aSize);
     char * d = _data;
+    
     memcpy(d, &player1->_x, sizeof(int16_t));                                          
     d += sizeof(int16_t);
     memcpy(d, &player1->_y, sizeof(int16_t));                                          
     d += sizeof(int16_t);
+    memcpy(d, &player1->_lives, sizeof(int16_t));                                          
+    d += sizeof(int16_t);
+
     memcpy(d, &player2->_x, sizeof(int16_t));                                          
     d += sizeof(int16_t);
     memcpy(d, &player2->_y, sizeof(int16_t));                                          
     d += sizeof(int16_t);
+    memcpy(d, &player2->_lives, sizeof(int16_t));                                          
+    d += sizeof(int16_t);
 
     int16_t tamBullet = bullets.size();
-    memcpy(d, &tamBullet, sizeof(int16_t));
-    //std::cout<<"to_bin: " << bullets.size() <<"\n";	
+    memcpy(d, &tamBullet, sizeof(int16_t));	
 
     for (int i = 0; i < bullets.size(); i++) {
         d += sizeof(int16_t); 
@@ -52,14 +57,17 @@ int Game::from_bin(char * bobj){
     bobj += sizeof(int16_t);
     memcpy(&player1->_y, bobj, sizeof(int16_t));
     bobj += sizeof(int16_t);
+    memcpy(&player1->_lives, bobj, sizeof(int16_t));
+    bobj += sizeof(int16_t);
     memcpy(&player2->_x, bobj, sizeof(int16_t));
     bobj += sizeof(int16_t);
     memcpy(&player2->_y, bobj, sizeof(int16_t));
     bobj += sizeof(int16_t);
+    memcpy(&player2->_lives, bobj, sizeof(int16_t));
+    bobj += sizeof(int16_t);
 
     int16_t t;
-    memcpy(&t, bobj, sizeof(int16_t));
-    //std::cout<<"from_bin: " << t<<"\n";	
+    memcpy(&t, bobj, sizeof(int16_t));	
     bullets.clear();
     for (int i = 0; i < t; i++) {
         int16_t _x;

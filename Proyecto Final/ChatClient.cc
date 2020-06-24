@@ -44,7 +44,7 @@ int main(int argc, char **argv)
 
     pthread_create(&id2, &attr2, _render_thread, static_cast<void *>(&ec));
    
-    XLDisplay::init(800, 400, "Space Showdown");
+    XLDisplay::init(600, 400, "Space Showdown");
    
     ec.login();
     ec.net_thread();
