@@ -7,9 +7,8 @@ Game::Game(int16_t x1,int16_t y1, int16_t x2, int16_t y2){
 }
 
 void Game::to_bin(){
-    size_t bSize= bullets.size() * sizeof(int16_t) * 3;
-    size_t aSize= asteroids.size() * sizeof(int16_t) * 3;
-    alloc_data(SIZE + bSize + aSize);
+    size_t vectorSize = (bullets.size() * sizeof(int16_t) * 3) + (asteroids.size() * sizeof(int16_t) * 3);
+    alloc_data(SIZE + vectorSize);
     char * d = _data;
     
     memcpy(d, &player1->_x, sizeof(int16_t));                                          
@@ -26,8 +25,8 @@ void Game::to_bin(){
     memcpy(d, &player2->_lives, sizeof(int16_t));                                          
     d += sizeof(int16_t);
 
-    int16_t tamBullet = bullets.size();
-    memcpy(d, &tamBullet, sizeof(int16_t));	
+    int16_t tambullet = bullets.size();
+    memcpy(d, &tambullet, sizeof(int16_t));	
 
     for (int i = 0; i < bullets.size(); i++) {
         d += sizeof(int16_t); 
@@ -39,8 +38,8 @@ void Game::to_bin(){
     }
 
     d += sizeof(int16_t);
-    int16_t tamAsteroid = asteroids.size();
-    memcpy(d, &tamAsteroid, sizeof(int16_t));
+    int16_t tamasteroid = asteroids.size();
+    memcpy(d, &tamasteroid, sizeof(int16_t));
 
     for (int i = 0; i < asteroids.size(); i++) {
         d += sizeof(int16_t); 
@@ -50,6 +49,8 @@ void Game::to_bin(){
         d += sizeof(int16_t); 
         memcpy(d, &asteroids[i]._velY, sizeof(int16_t));
     }
+    d += sizeof(int16_t);
+    memcpy(d, &start, sizeof(int16_t));
 }
 
 int Game::from_bin(char * bobj){
@@ -101,6 +102,8 @@ int Game::from_bin(char * bobj){
         Asteroid ast(_x, _y ,_velY);
         asteroids.push_back(ast);
     }
+    bobj += sizeof(int16_t); 
+    memcpy(&start, bobj, sizeof(int16_t));
 
     return 0;
 }
@@ -119,7 +122,7 @@ void Game::createBullet(int16_t nPlayer)
 
 void Game::createAsteroid()
 {
-	Asteroid asteroid (400, 200, 1);
+	Asteroid asteroid (300, 200, 1);
 	asteroids.push_back(asteroid);
 }
 
@@ -136,5 +139,12 @@ void Game::reset_game(){
     	
     bullets.clear();    	
     asteroids.clear();
+}
+
+bool Game::start_game(){
+    if(start == 0)
+        return false;
+    else if(start == 1)
+        return true;
 }
 

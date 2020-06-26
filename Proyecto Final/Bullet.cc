@@ -13,17 +13,6 @@ Bullet::Bullet(int16_t x, int16_t y, int16_t nPlayer){
 
 }
 
-XLDisplay& Bullet::render(){
-    XLDisplay& disp = XLDisplay::display();
-    if(_nPlayer==1)
-        disp.set_color(XLDisplay::BLUE);
-    else
-        disp.set_color(XLDisplay::RED);
-
-    disp.circle(_x, _y, 10);
-    return disp;
-}
-
 void Bullet::move()
 {
 	_x += _velX;

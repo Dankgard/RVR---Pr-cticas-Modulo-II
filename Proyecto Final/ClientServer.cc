@@ -1,8 +1,8 @@
-#include "Chat.h"
+#include "ClientServer.h"
 #include <string>
 #include <stdlib.h>
 
-void ChatMessage::to_bin()
+void Message::to_bin()
 {
     alloc_data(MESSAGE_SIZE);
 
@@ -18,7 +18,7 @@ void ChatMessage::to_bin()
     }	
 }
 
-int ChatMessage::from_bin(char * bobj)
+int Message::from_bin(char * bobj)
 {
     alloc_data(MESSAGE_SIZE);
 
@@ -37,63 +37,69 @@ int ChatMessage::from_bin(char * bobj)
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
 
-void ChatServer::do_messages()
+void Server::do_messages()
 {
     while (true)
     {
-		ChatMessage mensj;
+		Message mensj;
 		Socket* newSd;
 		socket.recv(mensj, newSd);
 		switch(mensj.type){
-			case ChatMessage::LOGIN:
+			case Message::LOGIN:
                 if(client1 == nullptr){
                     client1 = newSd;
                     player1 = mensj.nick;                           
                     std::cout << "LOGIN: " << player1 << "\n";
+					if(client2 !=nullptr)
+						game->start = 1;
                 }
                 else if(client2 == nullptr){
                     client2 = newSd;
                     player2 = mensj.nick;                           
                     std::cout << "LOGIN: " << player2 << "\n";
+					if(client1 !=nullptr)
+						game->start = 1;
                 }
                 else{
                     std::cout << "LOBBY IS FULL\n";
                 }
 			break;         
 
-			case ChatMessage::LOGOUT:     
-				if(mensj.nick == player1){
+			case Message::LOGOUT:     
+				if(mensj.nick == player1){                           
+                    std::cout << "LOGGED OUT: " << player1 << "\n";
+					delete newSd;
                     client1 = nullptr;
-                    player1 = "";                           
-                    std::cout << player1 << "logged out\n";
+                    player1 = "";
                 }
                 else if(mensj.nick == player2){
+					std::cout << "LOGGED OUT: " << player2 << "\n";
+					delete newSd;
                     client2 = nullptr;
-                    player2 = "";                           
-                    std::cout << player2 << "logged out\n";
+                    player2 = "";                
                 }
+				game->start = 0;
 			break;  
 
-            case ChatMessage::MOVEUP:
+            case Message::MOVEUP:
                 if(mensj.nick == player1)
                     game->player1->move(-10);
                 else if(mensj.nick == player2)
                     game->player2->move(-10);
             break;  
 
-            case ChatMessage::MOVEDOWN:
+            case Message::MOVEDOWN:
                 if(mensj.nick == player1)
                     game->player1->move(10);
                 else if(mensj.nick == player2)
                     game->player2->move(10);
             break;
 
-            case ChatMessage::SHOOT:
+            case Message::SHOOT:
 				if (mensj.nick == player1)
 				{
 					std::cout << player1 << "SHOOT\n";
 					game->createBullet(1);
-					std::cout<<game->bullets.size() << "\n";
 				}
 				else if (mensj.nick == player2)
 				{
@@ -102,7 +108,7 @@ void ChatServer::do_messages()
 				}
             break;
 
-			case ChatMessage::RESET:
+			case Message::RESET:
 				game->reset_game();
 			break;        
 
@@ -112,7 +118,7 @@ void ChatServer::do_messages()
     }
 }
 
-void ChatServer::bullet_behaviour(){
+void Server::bullet_behaviour(){
 	// balas
 	for (int i = 0;i < game->bullets.size();i++)
 	{
@@ -130,7 +136,6 @@ void ChatServer::bullet_behaviour(){
 		{
 			if (game->asteroids[j]._x - game->asteroids[j]._r < game->bullets[i]._x && game->asteroids[j]._x + game->asteroids[i]._r > game->bullets[i]._x && game->asteroids[j]._y + game->asteroids[i]._r > game->bullets[i]._y && game->asteroids[j]._y - game->asteroids[i]._r < game->bullets[i]._y)
 			{
-				std::cout << "COLISION ASTEROIDE\n";
 				game->bullets.erase(game->bullets.begin() + i);
 				game->asteroids[j].bulletCollision(game->bullets[i]._nPlayer, 2);
 			}
@@ -143,8 +148,6 @@ void ChatServer::bullet_behaviour(){
 			{
 				game->bullets.erase(game->bullets.begin() + i);
 				game->player1->_lives--;
-				if (game->player1->_lives <= 0)
-					std::cout << "GAME OVER. PLAYER 2 WINS";
 			}
 		}
 
@@ -155,14 +158,12 @@ void ChatServer::bullet_behaviour(){
 			{
 				game->bullets.erase(game->bullets.begin() + i);
 				game->player2->_lives--;
-				if (game->player2->_lives <= 0)
-					std::cout << "GAME OVER. PLAYER 1 WINS";
 			}
 		}
 	}
 }
 
-void ChatServer::asteroid_behaviour(){
+void Server::asteroid_behaviour(){
 	// asteroides
 	for (int i = 0;i < game->asteroids.size();i++)
 	{
@@ -186,8 +187,6 @@ void ChatServer::asteroid_behaviour(){
 			if(game->asteroids[i]._y == game->player1->_y + game->player1->_h || game->asteroids[i]._y == game->player1->_y)
 				game->asteroids[i]._velY *= -1;
 			game->player1->_lives -= 2;
-			if (game->player1->_lives <= 0)
-				std::cout << "GAME OVER. PLAYER 2 WINS";
 		}
 
 		// con jugador 2
@@ -197,17 +196,15 @@ void ChatServer::asteroid_behaviour(){
 			if((game->asteroids[i]._y == game->player2->_y + game->player2->_h) || game->asteroids[i]._y == game->player2->_y)
 				game->asteroids[i]._velY *= -1;
 			game->player2->_lives -= 2;
-			if (game->player2->_lives <= 0)
-				std::cout << "GAME OVER. PLAYER 1 WINS";
 		}
 	}
 }
 
-void ChatServer::update_server(){
+void Server::update_server(){
     while(true){        
         usleep(10000);
 
-		if(!game->end_game()){
+		if(!game->end_game() && game->start_game()){
 			// creacion de asteroides
 			int r = rand() % 1000000;
 			if(game->asteroids.size() < 3 && r<100)
@@ -227,49 +224,48 @@ void ChatServer::update_server(){
     }        
 }
 
-void ChatClient::login()
+void Client::login()
 {
     std::string msg;
 
-    ChatMessage em(nick);
-    em.type = ChatMessage::LOGIN;
+    Message em(nick);
+    em.type = Message::LOGIN;
 
     socket.send(em, socket);
 }
 
-void ChatClient::logout()
+void Client::logout()
 {
 	std::string msg;
 
-	ChatMessage em(nick);
-    em.type = ChatMessage::LOGOUT;
+	Message em(nick);
+    em.type = Message::LOGOUT;
 	
 	socket.send(em, socket);
 }
 
-void ChatClient::input_thread()
+void Client::input_thread()
 {            
     char c;
-    ChatMessage m(nick);
+    Message m(nick);
     do{
         c = dpy->wait_key();
         switch(c){
             case 'w':
-				if(!game->end_game()){
-					m.type = ChatMessage::MOVEUP;
+				if(game->start_game() && !game->end_game()){
+					m.type = Message::MOVEUP;
 					socket.send(m, socket);
 				}
             break;
             case 'd':
-				if(!game->end_game()){
-                	m.type = ChatMessage::MOVEDOWN;
+				if(game->start_game() && !game->end_game()){
+                	m.type = Message::MOVEDOWN;
                 	socket.send(m, socket);
 				}
             break;
             case ' ':
-				if(!game->end_game()){
-					std::cout<<"Bala\n";
-                	m.type = ChatMessage::SHOOT;
+				if(game->start_game() && !game->end_game()){
+                	m.type = Message::SHOOT;
                 	socket.send(m, socket);
 				}
             break;
@@ -281,7 +277,7 @@ void ChatClient::input_thread()
 			case 'p':
 				if(game->end_game()){
 					std::cout<<"REINICIO\n";
-					m.type = ChatMessage::RESET;
+					m.type = Message::RESET;
                 	socket.send(m, socket);
 				}
             break;
@@ -289,7 +285,7 @@ void ChatClient::input_thread()
     }while(!exit);
 }
 
-void ChatClient::net_thread()
+void Client::net_thread()
 {
     while(!exit)
     {
@@ -297,7 +293,7 @@ void ChatClient::net_thread()
     }
 }
 
-void ChatClient::render_thread()
+void Client::render_thread()
 {
 	while(!exit)
     {
@@ -305,46 +301,54 @@ void ChatClient::render_thread()
 		dpy->clear();
 
 		// RENDERS
-		if(!game->end_game()){
-			dpy->set_color(XLDisplay::RED);
-			std::string s1 = "Player 1: " + std::to_string(game->player1->_lives);
-			std::string s2 = "Player 2: " + std::to_string(game->player2->_lives);
-			dpy->text(50, 10, s1);
-			dpy->text(500, 10, s2);
+		if(game->start_game()){
+			if(!game->end_game()){
 
-			// render jugadores
-			dpy->set_color(XLDisplay::BLUE);
-			std::cout << game->player1->_y<<"\n";
-			dpy->rectangle(game->player1->_x, game->player1->_y, game->player1->_w, game->player1->_h);
-			dpy->set_color(XLDisplay::RED);
-			dpy->rectangle(game->player2->_x, game->player2->_y, game->player1->_w, game->player1->_h);		
-						
-			// render balas
-			for (int i = 0;i < game->bullets.size();i++)
-			{			
-				if (game->bullets[i]._nPlayer == 1)
-					dpy->set_color(XLDisplay::BLUE);
-				else
-					dpy->set_color(XLDisplay::RED);
+				// render jugadores
+				dpy->set_color(XLDisplay::BLUE);
+				dpy->rectangle(game->player1->_x, game->player1->_y, game->player1->_w, game->player1->_h);
+				dpy->set_color(XLDisplay::RED);
+				dpy->rectangle(game->player2->_x, game->player2->_y, game->player1->_w, game->player1->_h);		
+							
+				// render balas
+				for (int i = 0;i < game->bullets.size();i++)
+				{			
+					if (game->bullets[i]._nPlayer == 1)
+						dpy->set_color(XLDisplay::BLUE);
+					else
+						dpy->set_color(XLDisplay::RED);
 
-				dpy->circle(game->bullets[i]._x, game->bullets[i]._y, game->bullets[i]._r);
-			}
+					dpy->circle(game->bullets[i]._x, game->bullets[i]._y, game->bullets[i]._r);
+				}
 
-			// render asteroides
-			for (int i = 0;i < game->asteroids.size();i++)
-			{
+				// render asteroides
+				for (int i = 0;i < game->asteroids.size();i++)
+				{
+					dpy->set_color(XLDisplay::BROWN);
+					dpy->circle(game->asteroids[i]._x, game->asteroids[i]._y, game->asteroids[i]._r);
+				}
+				
+				//Vidas
 				dpy->set_color(XLDisplay::BROWN);
-				dpy->circle(game->asteroids[i]._x, game->asteroids[i]._y, game->asteroids[i]._r);
+				std::string p1 = "Jugador 1: " + std::to_string(game->player1->_lives);
+				std::string p2 = "Jugador 2: " + std::to_string(game->player2->_lives);
+				dpy->text(50, 10, p1);
+				dpy->text(500, 10, p2);
+			}
+			else{ //Cuando termina la partida
+				dpy->set_color(XLDisplay::BROWN);
+				std::string win;
+				if(game->player1->_lives <= 0)
+					win = "VICTORIA JUGADOR 2";
+				else if(game->player2->_lives <= 0)
+					win = "VICTORIA JUGADOR 1";
+				dpy->text(250,200, win);
+				dpy->text(200,250, "Pulsa P para comenzar una nueva partida");
 			}
 		}
-		else{
-			dpy->set_color(XLDisplay::RED);
-			std::string win;
-			if(game->player1->_lives <= 0)
-				win = "VICTORIA JUGADOR 2";
-			else if(game->player2->_lives <= 0)
-				win = "VICTORIA JUGADOR 1";
-			dpy->text(250,250, win);
+		else{ //Cuando se espera a que entren dos jugadores
+			dpy->set_color(XLDisplay::BROWN);
+			dpy->text(200,200, "Esperando al otro jugador...");
 		}
 		dpy->flush();
 	}

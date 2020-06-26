@@ -1,23 +1,23 @@
 CC=g++
-CFLAGS=-g -I.
-DEPS = Socket.h Game.h Chat.h XLDisplay.h Player.h Bullet.h Asteroid.h
-OBJ = Socket.o Game.o Chat.o XLDisplay.o Player.o Bullet.o Asteroid.o
-LIBS=-lpthread -lm -lX11
+CFLAGS=-g -I. -std=c++11
+DEPS = Socket.h Game.h ClientServer.h XLDisplay.h Player.h Bullet.h Asteroid.h
+OBJ = Socket.o Game.o ClientServer.o XLDisplay.o Player.o Bullet.o Asteroid.o
+LIBS=-lpthread -lm -lX11 -std=c++11
 
 %.o: %.cc $(DEPS)
-	$(CC) -std=c++11 -g -c -o $@ $< $(CFLAGS)
+	$(CC) -g -c -o $@ $< $(CFLAGS)
 
-all: cs cc
+all: server client
 
-cs: $(OBJ) ChatServer.o
-	g++ -std=c++11 -o $@ $^ $(CFLAGS) $(LIBS)
+server: $(OBJ) SpaceShodownServer.o
+	g++ -o $@ $^ $(CFLAGS) $(LIBS)
 
-cc: $(OBJ) ChatClient.o
-	g++ -std=c++11 -o $@ $^ $(CFLAGS) $(LIBS)
+client: $(OBJ) SpaceShodownClient.o
+	g++ -o $@ $^ $(CFLAGS) $(LIBS)
 
 
 .PHONY: clean
 
 clean:
-	rm -f *.o cs cc
+	rm -f *.o server client
 

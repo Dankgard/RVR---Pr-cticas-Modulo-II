@@ -5,11 +5,11 @@
 
 #include "Serializable.h"
 #include "Socket.h"
-#include "Chat.h"
+#include "ClientServer.h"
 
 extern "C" void * _server_thread(void *arg)
 {
-    ChatServer * server = static_cast<ChatServer *>(arg);
+    Server * server = static_cast<Server *>(arg);
 
     server->update_server();
 
@@ -21,7 +21,7 @@ int main(int argc, char **argv)
     sigset_t waitset;
     int      sig;
 
-    ChatServer es(argv[1], argv[2]);
+    Server es(argv[1], argv[2]);
     pthread_attr_t attr;
     pthread_t id;
     pthread_attr_init(&attr);

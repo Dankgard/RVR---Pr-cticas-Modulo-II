@@ -1,13 +1,13 @@
 #include <string>
 #include <unistd.h>
 #include <string.h>
-#include "Chat.h"
+#include "ClientServer.h"
 
 #include "XLDisplay.h"
 
 extern "C" void * _client_thread(void *arg)
 {
-    ChatClient * server = static_cast<ChatClient *>(arg);
+    Client * server = static_cast<Client *>(arg);
 
     server->input_thread();
 
@@ -16,7 +16,7 @@ extern "C" void * _client_thread(void *arg)
 
 extern "C" void * _render_thread(void *arg)
 {
-    ChatClient * server = static_cast<ChatClient *>(arg);
+    Client * server = static_cast<Client *>(arg);
 
     server->render_thread();
 
@@ -26,7 +26,7 @@ extern "C" void * _render_thread(void *arg)
 
 int main(int argc, char **argv)
 {
-    ChatClient ec(argv[1], argv[2], argv[3]);
+    Client ec(argv[1], argv[2], argv[3]);
 
     pthread_attr_t attr;
     pthread_t id;

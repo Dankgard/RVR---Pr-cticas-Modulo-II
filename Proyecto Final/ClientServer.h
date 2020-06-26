@@ -9,7 +9,7 @@
 #include "Game.h"
 
 
-class ChatMessage: public Serializable
+class Message: public Serializable
 {
 public:
     static const size_t MESSAGE_SIZE = sizeof(char) * 88 + sizeof(uint8_t);
@@ -24,9 +24,9 @@ public:
         RESET = 5
     };
 
-    ChatMessage(){};
+    Message(){};
 
-    ChatMessage(const std::string& n):nick(n){};
+    Message(const std::string& n):nick(n){};
 
     void to_bin();
 
@@ -43,10 +43,10 @@ public:
 /**
  *  Clase para el servidor de chat
  */
-class ChatServer
+class Server
 {
 public:
-    ChatServer(const char * s, const char * p): socket(s, p)
+    Server(const char * s, const char * p): socket(s, p)
     {
         socket.bind();
         game = new Game(0, 100, 550, 300);
@@ -84,7 +84,7 @@ protected:
 /**
  *  Clase para el cliente de chat
  */
-class ChatClient
+class Client
 {
 public:
     /**
@@ -92,7 +92,7 @@ public:
      * @param p puerto del servidor
      * @param n nick del usuario
      */
-    ChatClient(const char * s, const char * p, const char * n):socket(s, p), nick(n){
+    Client(const char * s, const char * p, const char * n):socket(s, p), nick(n){
         game = new Game(0, 100, 550, 300);
         dpy = &XLDisplay::display();
     };
