@@ -183,9 +183,10 @@ void Server::asteroid_behaviour(){
 		// con jugador 1
 		if (game->asteroids[i]._x >= game->player1->_x && game->asteroids[i]._x <= game->player1->_x + game->player1->_w && game->asteroids[i]._y >= game->player1->_y && game->asteroids[i]._y <= game->player1->_y + game->player1->_h)
 		{
-			game->asteroids[i]._velX *= -1;
 			if(game->asteroids[i]._y == game->player1->_y + game->player1->_h || game->asteroids[i]._y == game->player1->_y)
 				game->asteroids[i]._velY *= -1;
+			else
+				game->asteroids[i]._velX *= -1;
 			game->player1->_lives -= 2;
 		}
 
